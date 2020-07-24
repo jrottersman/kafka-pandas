@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 from kafka import KafkaProducer, KafkaConsumer
 from kafka.structs import TopicPartition
@@ -26,10 +27,16 @@ def consume():
     return consumer.poll(timeout_ms=1000, max_records=100)
 
 def pandas(messages):
-    return pd.DataFrame(messages)
+    l = []
+    for m in messages.values():
+        msg = [i.value for i in m]
+        l.append(msg)
+    print(l)
+    return pd.DataFrame(l[0])
+
 
 if __name__ == '__main__':
-	producer()
+	#producer()
 	c = consume()
 	df = pandas(c)
 	print(df.head())

@@ -46,13 +46,12 @@ First, we will set up a Kafka consumer as follows
 ```
 This consumer will allow us to read the Kafka topics that we specified. In our case foo and the value deserializer will turn the JSON blob back to a dictionary. For the purposes of this example, we are going read from offset zero. If you need to read from an arbitary offset use consumer.seek to set the reset to the offset in a partition.
 
-The easiest way to consumer messages using Kafka python is something like.
+The standard way to consumer messages using Kafka python is.
 ```
 for message in consumer:
     # do something with message
 ```
-However, that is a blocking call so we are going to use poll instead.
-to do that we do the following 
+However, that is a blocking call so we are going to use poll instead. 
 ```
 consumer.poll(timeout_ms=1000, max_records=100)
 ```
@@ -60,7 +59,7 @@ An important thing to note is that just because the max records are set at 100 i
 
 # reading the data into the dataframe
 
-The data that is returned from the poll is a dictionary where each key is the topic and partition that the data came from and the value is a list of consumer records which is a python class. to extract the value of each record we will use the following code.
+The data that is returned from the poll is a dictionary where each key is the topic and partition that the data came from. The value is a list of consumer records. These consumer records are stored as a python class. The following code will extract each record value and place it in a list.
 
 ```
     l = []
@@ -68,12 +67,12 @@ The data that is returned from the poll is a dictionary where each key is the to
         for i in m:
             l.append(i.value)
 ```
-To walk through this code snippet we are iterating thorugh the values in the dictionary which we created from the poll. If you are following along with the tutorial that dictionary has a length of one since we setup a topic with only a single partition and the consumer only has one topic. 
-The values in the dictionary are a list. So we are iterating over each of those lists and extracting the value from the consumer record. There are a bunch of other fields that exist on the consumer record including things like offsets, timestamps and other metadata. The value is simply the actual value that is on the kafka topic. Since we already have the deseralizer on the consumer above they are already dictionaries but if they were in a raw form we could pass them to a function at this point to convert them to a data structure. Once we get the values we append them to a list.
+We are iterating thorugh the values in the dictionary that was returned by the consumers poll. We only passed a single topic to the consumer which has one partition so in this case that dictionary only has one element.
 
-Once we have that  list of dictionaries that we can easily turn into a pandas dataframe like so 
+That value is a list of consumer records. There is metadata in those records like offsets, timestamps and more. Exploring what is in the consumer record is a good exercise to know what data that kafka is storing. For this we just care about the actual value that we placed on the topic.
+
+Once we have that  list of dictionaries that we can easily turn into a pandas dataframe like so. 
 ```
 df = pd.DataFrame(l)
 print(df.head())
 ```
-If that worked correctly you should see each a dataframe with numbers for each record.

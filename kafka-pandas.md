@@ -33,7 +33,7 @@ def producer():
         producer.send(topic, num)
 ```
 
-The producer will send the records to the topic as JSON. 
+The producer will send the records to the topic as JSON. The value serializer field handles the conversion for us. Kafka needs to recieve records as bytes.
 
 # Consume the records
 First, we will set up a Kafka consumer as follows
@@ -44,7 +44,7 @@ First, we will set up a Kafka consumer as follows
     auto_offset_reset='earliest',
     value_deserializer=lambda x: json.loads(x.decode('utf-8')))
 ```
-This consumer will allow us to read the Kafka topics that we specified. In our case foo and the value deserializer will turn the JSON blob back to a dictionary. For the purposes of this example, we are going to set the reset to earliest but you could also use consumer.seek to set the reset to a particular offset in a partition if you desire.
+This consumer will allow us to read the Kafka topics that we specified. In our case foo and the value deserializer will turn the JSON blob back to a dictionary. For the purposes of this example, we are going read from offset zero. If you need to read from an arbitary offset use consumer.seek to set the reset to the offset in a partition.
 
 The easiest way to consumer messages using Kafka python is something like.
 ```

@@ -65,8 +65,8 @@ The data that is returned from the poll is a dictionary where each key is the to
 ```
     l = []
     for m in messages.values():
-        msg = [i.value for i in m]
-        l.append(msg)
+        for i in m:
+            l.append(i.value)
 ```
 To walk through this code snippet we are iterating thorugh the values in the dictionary which we created from the poll. If you are following along with the tutorial that dictionary has a length of one since we setup a topic with only a single partition and the consumer only has one topic. 
 The values in the dictionary are a list. So we are iterating over each of those lists and extracting the value from the consumer record. There are a bunch of other fields that exist on the consumer record including things like offsets, timestamps and other metadata. The value is simply the actual value that is on the kafka topic. Since we already have the deseralizer on the consumer above they are already dictionaries but if they were in a raw form we could pass them to a function at this point to convert them to a data structure. Once we get the values we append them to a list.
